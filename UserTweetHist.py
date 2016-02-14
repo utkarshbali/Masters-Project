@@ -55,7 +55,7 @@ def plotHistogram():
 
 def main():
 
-    f = file ("1year_filtered/1year_filtered.json")
+    f = file (sys.argv[1])
   
     f.seek (0)
     #Read File   
