@@ -41,21 +41,21 @@ def plotHistogram():
         tweetCount = users[listOfUsernames[i]]
         updateNumberOfUsers(tweetCount)
     listNumberOfTweets = list(userCount.keys())
+    listNumberOfTweets.sort()
     listNumberOfUsers = []
     for i in range(0, len(listNumberOfTweets)):
-        listNumberOfUsers.append(listNumberOfTweets[i])
-    
+        listNumberOfUsers.append(userCount[listNumberOfTweets[i]])
     tweets_vs_Users = plt.figure()
     plt.bar(np.arange(len(listNumberOfUsers)), listNumberOfUsers)
-    plt.xticks(np.arange(len(listNumberOfUsers)) + .25/2, listNumberOfTweets)
+    #plt.xticks(np.arange(len(listNumberOfUsers)) + .25/2, listNumberOfTweets)
     plt.xlabel('Number of Tweets', fontsize = 15)
     plt.ylabel('Number of Users', fontsize = 15)
-    tweets_vs_Users.savefig('#Tweets_v/s_#Users.pdf')
+    tweets_vs_Users.savefig('#Tweets_vs_#Users.png')
     
 
 def main():
 
-    f = file (sys.argv[1])
+    f = file ("1year_filtered/1year_filtered.json")
   
     f.seek (0)
     #Read File   
@@ -64,15 +64,9 @@ def main():
         if line == "":
             break
         j = json.loads(line)
-        tokens = nltk.word_tokenize(j["text"].encode('ascii', 'ignore') )
-        for i, x in enumerate(tokens):
-            try:
-                if x == "@":
-                    username = j["user"]["screen_name"]
-                    updateTweetCount(username)
-            except IndexError:
-                pass
-        
+        #tokens = nltk.word_tokenize(j["text"].encode('ascii', 'ignore') )
+        username = j["user"]["screen_name"]
+        updateTweetCount(username)
     f.close()
 
     #call plotHistogram
