@@ -51,7 +51,16 @@ def plotHistogram():
     plt.xlabel('Number of Tweets', fontsize = 15)
     plt.ylabel('Number of Users', fontsize = 15)
     tweets_vs_Users.savefig('#Tweets_vs_#Users.png')
-    
+    for i in range(0,9):    
+        listNumberOfTweets.pop(0)
+        listNumberOfUsers.pop(0)
+
+    tweets_vs_Users1 = plt.figure()
+    plt.bar(np.arange(len(listNumberOfUsers)), listNumberOfUsers)
+    #plt.xticks(np.arange(len(listNumberOfUsers)) + .25/2, listNumberOfTweets)
+    plt.xlabel('Number of Tweets', fontsize = 15)
+    plt.ylabel('Number of Users', fontsize = 15)
+    tweets_vs_Users1.savefig('#Tweets_vs_#Users1.png')
 
 def main():
 
