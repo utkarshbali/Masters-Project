@@ -4,6 +4,8 @@ from twython import Twython
 
 import tweepy
 
+from requests.exceptions import ChunkedEncodingError
+
 import time
 
 import requests
@@ -41,7 +43,7 @@ twitter =  Twython(consumer_key, consumer_secret,
                     access_token, access_token_secret)
 
 
-f=file("rocData.json","w")
+f=file("rocData-03-2015.json","w")
 
 class MyStreamer(TwythonStreamer):
 
@@ -55,6 +57,7 @@ class MyStreamer(TwythonStreamer):
 
             f.write(json.dumps(data) + "\n")
 
+
     def on_error(self, status_code, data):
 
         print status_code
@@ -62,12 +65,12 @@ class MyStreamer(TwythonStreamer):
         pass
 
 
-
-
-
-stream = MyStreamer(consumer_key, consumer_secret,
-
-                    access_token, access_token_secret)
-
-tweets = stream.statuses.filter(locations=[-78.5401368, 42.0002754,-78.5048062 ,43.3607733])
-tweets = stream.statuses.filter(locations=[-76.1827211,43.3301514,-76.0779906,42.0001244])
+def streamRocTweets():
+    while True:
+        try:
+            stream = MyStreamer(consumer_key, consumer_secret,access_token, access_token_secret)
+            tweets = stream.statuses.filter(locations=[-78.5401368, 42.0002754,-76.1827211,43.3301514])
+        except ChunkedEncodingError:
+            continue
+            
+streamRocTweets()
