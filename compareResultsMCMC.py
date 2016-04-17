@@ -3,6 +3,7 @@ import pickle
 import networkx as nx
 import numpy as np
 import xlsxwriter
+import mcmc
 
 wordGraph = {}
 name = ''
@@ -100,7 +101,7 @@ def compareLargestCC(masterGraph,wordGraph,worksheet,row):
 def main():
     global name
     DG = pickle.load(open('/usr/space1/uvb6476/directed_followers_graph.pkl','rb'))
-    getWordGraph('/usr/space1/uvb6476/wordGraph_mid.pkl','rb')
+    getWordGraph('/usr/space1/uvb6476/wordGraph_200.pkl')
     filename = file("CompareResultsNodes.xlsx","wb")
     workbook = xlsxwriter.Workbook(filename)
     bold = workbook.add_format({'bold': True})
@@ -126,7 +127,7 @@ def main():
         row = 5
         for i in range(0,1000):
             
-            masterGraphNodes = mcmc_subgraph_sample(UG, undiredctedGraph)
+            masterGraphNodes = mcmc.mcmc_subgraph_sample(UG, undirectedGraph)
             masterGraph = UG.subgraph(masterGraphNodes)
             print nx.number_of_edges(masterGraph)
             
