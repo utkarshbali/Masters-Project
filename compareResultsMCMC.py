@@ -103,7 +103,7 @@ def main():
     DG = pickle.load(open('/usr/space1/uvb6476/directed_followers_graph.pkl','rb'))
     getWordGraph('/usr/space1/uvb6476/wordGraph_200.pkl')
     filename = file("CompareResultsMCMC.xlsx","wb")
-    workbook = xlsxwriter.Workbook(filename)
+    workbook = xlsxwriter.Workbook(filename, {'nan_inf_to_errors': True})
     bold = workbook.add_format({'bold': True})
     UG = DG.to_undirected()
     nodes = UG.nodes()
