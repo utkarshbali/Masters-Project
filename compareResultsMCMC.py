@@ -149,7 +149,7 @@ def main():
 	       
             masterGraphNodes = mcmc.mcmc_subgraph_sample(UG, undirectedGraph)
             undirectedMasterGraph = UG.subgraph(masterGraphNodes)
-
+            print nx.number_of_edges(undirectedMasterGraph)
             nodesResult = compareNumberOfEdges(undirectedMasterGraph,graph,worksheet,row + 2)
             if nodesResult == 1:
                 countNodes = countNodes + 1
