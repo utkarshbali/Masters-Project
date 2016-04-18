@@ -105,6 +105,8 @@ def main():
     filename = file("CompareResultsNodes.xlsx","wb")
     workbook = xlsxwriter.Workbook(filename)
     bold = workbook.add_format({'bold': True})
+    UG = DG.to_undirected()
+    nodes = UG.nodes()
     for value in wordGraph:
         if value == '...':
             name = 'dotDotDot'
@@ -115,18 +117,18 @@ def main():
         countAvgClusteringCoeff = 0
         countAvgTriangles = 0
         countLargestCC = 0
-        
-        
         #worksheet.write(6,0,"KCore",bold)
         #worksheet.write(7,0,"Graph",bold)
         graph =  wordGraph[value]
         undirectedGraph = graph.to_undirected()
-        UG = DG.to_undirected()
+	numberOfNodes =  nx.number_of_nodes(undirectedGraph) 
         
+	print numberOfNodes
         print nx.number_of_edges(undirectedGraph)
         row = 5
         for i in range(0,1000):
             
+	    #masterGraphNodes = random.sample(nodes,numberOfNodes)
             masterGraphNodes = mcmc.mcmc_subgraph_sample(UG, undirectedGraph)
             masterGraph = UG.subgraph(masterGraphNodes)
             print nx.number_of_edges(masterGraph)
