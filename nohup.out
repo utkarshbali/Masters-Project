@@ -1,0 +1,12 @@
+Traceback (most recent call last):
+  File "compareResultsMCMC.py", line 220, in <module>
+    main()# -*- coding: utf-8 -*-
+  File "compareResultsMCMC.py", line 133, in main
+    worksheet = workbook.add_worksheet(name)
+  File "/usr/local/lib/anaconda2/lib/python2.7/site-packages/xlsxwriter/workbook.py", line 169, in add_worksheet
+    return self._add_sheet(name, is_chartsheet=False)
+  File "/usr/local/lib/anaconda2/lib/python2.7/site-packages/xlsxwriter/workbook.py", line 550, in _add_sheet
+    name = self._check_sheetname(name, is_chartsheet)
+  File "/usr/local/lib/anaconda2/lib/python2.7/site-packages/xlsxwriter/workbook.py", line 609, in _check_sheetname
+    sheetname)
+Exception: Invalid Excel character '[]:*?/\' in sheetname '1:00'
