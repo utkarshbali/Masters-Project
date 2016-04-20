@@ -1,0 +1,2 @@
+Invalid Excel character '[]:*?/\' in sheetname '1:00'
+1:00
