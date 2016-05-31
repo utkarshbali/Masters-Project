@@ -1,6 +1,7 @@
 import json
 import networkx as nx
 import pickle
+import sys
 
 userTweets = {}
 tweets = []
@@ -8,7 +9,8 @@ tweets = []
 def main():
     global userTweets
     # Get json file to read from
-    f = file ("1year_filtered/1year_filtered.json")
+    #f = file ("1year_filtered/1year_filtered.json")
+    f = file (sys.argv[1])
     DG = pickle.load(open("directed_followers_graph1.pkl","rb"))
     nodes = nx.nodes(DG)
     while True:
@@ -31,7 +33,7 @@ def main():
         except Exception as e:
             print e
     f.close()
-    #pickle.dump(userTweets,open("userTweets.pkl","wb"))
-    pickle.dump(userTweets,open("/usr/space1/uvb6476/userTweets.pkl","wb"))
+    pickle.dump(userTweets,open("userTweets.pkl","wb"))
+    #pickle.dump(userTweets,open("/usr/space1/uvb6476/userTweets.pkl","wb"))
 if __name__ == "__main__":
     main()

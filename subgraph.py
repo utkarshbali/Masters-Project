@@ -17,19 +17,21 @@ def getWords():
     words = pickle.load(open("topWords.pkl","rb"))
 
 def getTop50Words():
-    
     global top50
     getWords()
-    mid = int(len(words)/8)
-    for i in range(mid,len(words)):
+    #mid = int(len(words)/200)
+    #print mid
+    for i in range(0,100):
         if len(top50) == 50:
             break
         word = words[i][0].encode('ascii','ignore')
-        count = words[i][1]
+        print word
+        #count = words[i][1]
         word = re.sub(r'^https?:\/\/.*[\r\n]*', '', word, flags=re.MULTILINE)
+        print word
         if (word != ''):
             top50.append(word)
-            print count
+            #print count
    
 def main():
     global wordGraph
@@ -65,7 +67,7 @@ def main():
         wordGraph[word] = subGraph
     #print wordGraph
 
-    pickle.dump(wordGraph,open('wordGraph_mid.pkl','wb'))
+    pickle.dump(wordGraph,open('wordGraph_200.pkl','wb'))
 
 if __name__ == "__main__":
     main()# -*- coding: utf-8 -*-

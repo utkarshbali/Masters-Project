@@ -4,13 +4,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import xlsxwriter
 import os
+import math
 
 wordGraph = {}
 name = ''
+zeroNodes = []
+count = 0
 
 def getWordGraph():
     global wordGraph
-    wordGraph = pickle.load(open("wordGraph_500_550.pkl","rb"))
+    wordGraph = pickle.load(open("wordGraph_750.pkl","rb"))
 
 def getNumberOfNodes(graph,worksheet):
     numberOfNodes = nx.number_of_nodes(graph)
@@ -29,7 +32,7 @@ def getDegreeHist(graph,nodes,worksheet):
     degrees = {}
     for node in nodes:
         degrees[node] = nx.degree(graph,node)
-    directory = "wordGraphs/500_550/"+name
+    directory = "wordGraphs/750/"+name
     directory = os.path.normpath(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)    
@@ -40,7 +43,8 @@ def getDegreeHist(graph,nodes,worksheet):
     plt.ylabel('Frequency', fontsize = 15)
     plt.title(r'$\mathrm{Degree\ Histogram\ for\ }'+name+'\ $',fontsize = 15)
     plt.grid(True)
-    plt.axis([-100,300,0.1,10000])
+    xMax = int(math.ceil(max(degrees.values()) / 50.0)) * 50
+    plt.axis([0,xMax,0.1,1000])
     plt.savefig(fileName, format="PNG")
     plt.show()
     worksheet.insert_image(4,1,fileName, {'x_scale': 0.5, 'y_scale': 0.5})
@@ -56,7 +60,7 @@ def getClusteringCoeffHist(graph,nodes,worksheet):
     for node in nodes:
         cc[node] = nx.clustering(graph,node)
         cc[node] = round(cc[node],2)
-    directory = "wordGraphs/500_550/"+name
+    directory = "wordGraphs/750/"+name
     directory = os.path.normpath(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)    
@@ -68,7 +72,7 @@ def getClusteringCoeffHist(graph,nodes,worksheet):
     plt.title(r'$\mathrm{Clustering\ Coefficient\ Histogram\ for\ }' + name + ' \ $',fontsize = 15)        
     plt.savefig(fileName, format="PNG") 
     plt.grid(True)
-    plt.axis([-0.1,1.1,0.1,10000])
+    plt.axis([-0.1,1.1,0.1,1000])
     plt.show()
     worksheet.insert_image(4,2,fileName, {'x_scale': 0.5, 'y_scale': 0.5})
 
@@ -83,7 +87,7 @@ def getTrianglesHist(graph,worksheet):
     global name
     triangles = {}
     triangles = nx.triangles(graph)
-    directory = "wordGraphs/500_550/"+name
+    directory = "wordGraphs/750/"+name
     directory = os.path.normpath(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)    
@@ -95,7 +99,8 @@ def getTrianglesHist(graph,worksheet):
     plt.title(r'$\mathrm{Triangles\ Histogram\ for\ }' + name +'\ $',fontsize = 15)    
     plt.savefig(fileName, format="PNG")
     plt.grid(True)
-    plt.axis([-200,1000,0.1,10000])
+    xMax = int(math.ceil(max(triangles.values()) / 50.0)) * 50
+    plt.axis([0,xMax,0.1,1000])
     plt.show()    
     worksheet.insert_image(4,3,fileName, {'x_scale': 0.5, 'y_scale': 0.5})
 
@@ -108,7 +113,7 @@ def getKCore(graph,worksheet):
     global name
     kCore = nx.k_core(graph)
     print 'KCore : '
-    directory = "wordGraphs/500_550/"+name
+    directory = "wordGraphs/750/"+name
     directory = os.path.normpath(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)    
@@ -124,7 +129,7 @@ def getGraph(graph,worksheet):
     global name
     print 'Graph : '
     nx.draw(graph,pos=nx.spring_layout(graph),node_size=100)
-    directory = "wordGraphs/500_550/"+name
+    directory = "wordGraphs/750/"+name
     directory = os.path.normpath(directory)
     if not os.path.exists(directory):
         os.makedirs(directory)    
@@ -136,22 +141,31 @@ def getGraph(graph,worksheet):
     worksheet.insert_image(4,6,fileName, {'x_scale': 0.5, 'y_scale': 0.5})
     
 def main():
-    global name
+    global name,count,zeroNodes
     getWordGraph()
-    filename = file("Word Graph_500_550.xlsx","wb")  
+    filename = file("Word Graph_750.xlsx","wb")  
     workbook = xlsxwriter.Workbook(filename)
     bold = workbook.add_format({'bold': True})
     for value in wordGraph:
-        if value == "...":
-            print "hello world3"
-            name = "dotDotDot"
-        elif value == "..":
-            name = 'dotDot'
+        count = count + 1
+        if value == ". .":
+            name = "dotDot"
+        elif value == ".......":
+            name = 'dotDotDotDot'
+        elif value == "24/7":
+            name = '24X7'
+        elif value == "@teamginger_":
+            name = '@teamginger'
+        elif value == ":p":
+            name = 'tongueSmiley'
+        elif value == ":D":
+            name = 'laughterSmiley'
         else:
             name = value
         print name
+        print count
         worksheet = workbook.add_worksheet(name)
-        worksheet.set_column(1, 6, 50)
+        worksheet.set_column(0, 6, 50)
         worksheet.write(0,0,"Number of Nodes",bold)
         worksheet.write(0,1,"Average Degree",bold)
         worksheet.write(0,2,"Average Clustering Coefficient",bold)
@@ -163,15 +177,19 @@ def main():
         undirectedGraph = graph.to_undirected()
         nodes = nx.nodes(graph)
         getNumberOfNodes(graph,worksheet)
-        getAvgDegree(graph,worksheet)
-        getDegreeHist(graph,nodes,worksheet)
-        getAvgClusteringCoeff(undirectedGraph,worksheet)
-        getClusteringCoeffHist(undirectedGraph,nodes,worksheet)
-        getAvgNumberOfTriangles(undirectedGraph,worksheet)
-        getTrianglesHist(undirectedGraph,worksheet)
-        getLargestCC(undirectedGraph,worksheet)
-        getKCore(undirectedGraph,worksheet)
-        getGraph(graph,worksheet)
+        numberOfNodes = nx.number_of_nodes(graph)
+        if numberOfNodes > 0:
+            getAvgDegree(graph,worksheet)
+            getDegreeHist(graph,nodes,worksheet)
+            getAvgClusteringCoeff(undirectedGraph,worksheet)
+            getClusteringCoeffHist(undirectedGraph,nodes,worksheet)
+            getAvgNumberOfTriangles(undirectedGraph,worksheet)
+            getTrianglesHist(undirectedGraph,worksheet)
+            getLargestCC(undirectedGraph,worksheet)
+            getKCore(undirectedGraph,worksheet)
+            getGraph(graph,worksheet)
+        else:
+            zeroNodes.append(name)
     workbook.close()
 
 if __name__ == "__main__":

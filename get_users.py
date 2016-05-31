@@ -28,7 +28,7 @@ def updateTweetCount(userId):
 
 def main():
     # Get json file to read from
-    #f = file ("denver-03-2016.json")
+    #f = file ("rocData-03-2016.json")
     f = file (sys.argv[1])
     f.seek (0)
    #Read File

@@ -8,13 +8,13 @@ tweets = []
 
 def getUsers():
     global users
-    users = pickle.load(open('syracuseUsers.pkl','rb'))
+    users = pickle.load(open('buffaloUsers.pkl','rb'))
     
 def main():
     global userTweets
     getUsers()
     # Get json file to read from
-    f = file ("syracuse-03-2016.json")
+    f = file ("buffalo-03-2016.json")
     while True:
         try:
             line = f.readline()
@@ -35,6 +35,6 @@ def main():
         except Exception as e:
             print e
     f.close()
-    pickle.dump(userTweets,open("syracuseUserTweets.pkl","wb"))
+    pickle.dump(userTweets,open("buffaloUserTweets.pkl","wb"))
 if __name__ == "__main__":
     main()

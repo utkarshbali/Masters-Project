@@ -25,8 +25,8 @@ def getRelevantUsers():
 def main():
     global users,followers,friends,relevantUsers
     # Get json file to read from
-    #f = file (sys.argv[1])
-    f = file ("13-2015_social_graph.json")
+    f = file (sys.argv[1])
+    #f = file ("13-2015_social_graph.json")
     relevantUsers = getRelevantUsers()
     DG = nx.DiGraph()
     

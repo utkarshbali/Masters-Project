@@ -12,6 +12,21 @@ def getWordGraph(filename):
     global wordGraph
     wordGraph = pickle.load(open(filename,"rb"))
 
+def compareNumberOfNodes(masterGraph,wordGraph,worksheet,row):
+    numberOfNodesMasterGraph = nx.number_of_nodes(masterGraph)
+    numberOfNodesWordGraph = nx.number_of_nodes(wordGraph)
+    worksheet.write(row,1,numberOfNodesMasterGraph)
+    worksheet.write(row,2,numberOfNodesWordGraph)
+    result = False
+    if(numberOfNodesMasterGraph >= numberOfNodesWordGraph):
+        result = True
+    worksheet.write(row,2,result)
+
+    if result == True:
+        return 1
+    else:
+        return -1
+
 def compareNumberOfEdges(masterGraph,wordGraph,worksheet,row):
     numberOfEdgesMasterGraph = nx.number_of_edges(masterGraph)
     numberOfEdgesWordGraph = nx.number_of_edges(wordGraph)
@@ -111,9 +126,11 @@ def compare_intersection(masterGraph, workgraph, expected_overlap, worksheet, ro
 
 def main():
     global name
-    DG = pickle.load(open('/usr/space1/uvb6476/directed_followers_graph.pkl','rb'))
-    getWordGraph('/usr/space1/uvb6476/wordGraph_200.pkl')
-    filename = file("CompareResultsMCMC.xlsx","wb")
+    #DG = pickle.load(open('/usr/space1/uvb6476/directed_followers_graph.pkl','rb'))
+    #getWordGraph('/usr/space1/uvb6476/wordGraph_200.pkl')
+    DG = pickle.load(open('directed_followers_graph.pkl','rb'))
+    getWordGraph('wordGraph_200.pkl')
+    filename = file("CompareResultsMCMC200.xlsx","wb")
     workbook = xlsxwriter.Workbook(filename, {'nan_inf_to_errors': True})
     bold = workbook.add_format({'bold': True})
     UG = DG.to_undirected()
@@ -121,9 +138,14 @@ def main():
     for value in wordGraph:
         if value == '...':
             name = 'dotDotDot'
+        if value == ':D':
+            name = 'smileyEmoji'
+        if value == ':p':
+            name = 'toungeEmoji'
         else:
             name = value
         countNodes = 0
+        countEdges = 0
         countDegree = 0
         countAvgClusteringCoeff = 0
         countAvgTriangles = 0
@@ -154,23 +176,27 @@ def main():
             #print numberOfNodes
             #print nx.number_of_edges(undirectedGraph)
             expected_overlap = numberOfNodes * numberOfNodes / len(nodes)
-            row = 7
+            row = 8
             for i in range(0,1000):
                 worksheet.write(row + 1,0,"Random Subgraph #"+str(i+1),bold)
-                worksheet.write(row + 2,0,"Number Of Edges",bold)
-                worksheet.write(row + 3,0,"Average Degree",bold)
-                worksheet.write(row + 4,0,"Average Clustering Coefficient",bold)
-                worksheet.write(row + 5,0,"Average number of triangles",bold)
-                worksheet.write(row + 6,0,"Largest Connected Component",bold)
-                worksheet.write(row + 7,0,"Overlap",bold)
+                worksheet.write(row + 2,0,"Number Of Nodes",bold)
+                worksheet.write(row + 3,0,"Number Of Edges",bold)
+                worksheet.write(row + 4,0,"Average Degree",bold)
+                worksheet.write(row + 5,0,"Average Clustering Coefficient",bold)
+                worksheet.write(row + 6,0,"Average number of triangles",bold)
+                worksheet.write(row + 7,0,"Largest Connected Component",bold)
+                worksheet.write(row + 8,0,"Overlap",bold)
 
-    	       
                 masterGraphNodes = mcmc.mcmc_subgraph_sample(UG, undirectedGraph)
+
                 undirectedMasterGraph = UG.subgraph(masterGraphNodes)
                 if nx.number_of_nodes(undirectedGraph) > 0:
-                    nodesResult = compareNumberOfEdges(undirectedMasterGraph,graph,worksheet,row + 2)
+                    nodesResult = compareNumberOfNodes(undirectedMasterGraph,graph,worksheet,row + 1)
                     if nodesResult == 1:
                         countNodes = countNodes + 1
+                    edgesResult = compareNumberOfEdges(undirectedMasterGraph,graph,worksheet,row + 2)
+                    if edgesResult == 1:
+                        countEdges = countEdges + 1
                     degreeResult = compareAvgDegree(undirectedMasterGraph,graph,worksheet,row + 3)
                     if degreeResult == 1:
                         countDegree = countDegree + 1
@@ -196,26 +222,28 @@ def main():
                     worksheet.write(row + 7,1,"0",bold)
                    
                 row = row + 7
-                
-            
-            worksheet.write(1,1,countNodes,bold)
-            worksheet.write(1,2,(1000 - countNodes),bold)
-            worksheet.write(1,4,(countNodes/10),bold)
-            worksheet.write(2,1,countDegree,bold)
-            worksheet.write(2,2,(1000- countDegree),bold)
-            worksheet.write(2,4,(countDegree/10),bold)
-            worksheet.write(3,1,countAvgClusteringCoeff,bold)
-            worksheet.write(3,2,(1000 - countAvgClusteringCoeff),bold)
-            worksheet.write(3,4,(countAvgClusteringCoeff/10),bold)
-            worksheet.write(4,1,countAvgTriangles,bold)
-            worksheet.write(4,2,(1000 - countAvgTriangles),bold)
-            worksheet.write(4,4,(countAvgTriangles/10),bold)
-            worksheet.write(5,1,countLargestCC,bold)
-            worksheet.write(5,2,(1000 - countLargestCC),bold)
-            worksheet.write(5,4,(countLargestCC/10),bold)
-            worksheet.write(6,1,countOverlap,bold)
-            worksheet.write(6,2,(1000 - countOverlap),bold)
-            worksheet.write(6,4,(countOverlap/10),bold)
+
+            worksheet.write(1,1,countEdges,bold)
+            worksheet.write(1,2,(1000 - countEdges),bold)
+            worksheet.write(1,4,(countEdges/10),bold) 
+            worksheet.write(2,1,countNodes,bold)
+            worksheet.write(2,2,(1000 - countNodes),bold)
+            worksheet.write(2,4,(countNodes/10),bold)
+            worksheet.write(3,1,countDegree,bold)
+            worksheet.write(3,2,(1000- countDegree),bold)
+            worksheet.write(3,4,(countDegree/10),bold)
+            worksheet.write(4,1,countAvgClusteringCoeff,bold)
+            worksheet.write(4,2,(1000 - countAvgClusteringCoeff),bold)
+            worksheet.write(4,4,(countAvgClusteringCoeff/10),bold)
+            worksheet.write(5,1,countAvgTriangles,bold)
+            worksheet.write(5,2,(1000 - countAvgTriangles),bold)
+            worksheet.write(5,4,(countAvgTriangles/10),bold)
+            worksheet.write(6,1,countLargestCC,bold)
+            worksheet.write(6,2,(1000 - countLargestCC),bold)
+            worksheet.write(6,4,(countLargestCC/10),bold)
+            worksheet.write(7,1,countOverlap,bold)
+            worksheet.write(7,2,(1000 - countOverlap),bold)
+            worksheet.write(7,4,(countOverlap/10),bold)
         except Exception as e:
             print e
             print name
